@@ -65,6 +65,14 @@ const AdminSidebar = () => {
           <Settings className="h-5 w-5" />
           <span>Configuración</span>
         </Link>
+        
+        <Link
+          to="/admin/products"
+          className="flex items-center space-x-2 p-2 hover:bg-gray-800 rounded"
+        >
+          <Package className="h-5 w-5" />
+          <span>Products</span>
+        </Link>
       </nav>
       
       <button

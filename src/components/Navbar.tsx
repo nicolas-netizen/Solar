@@ -2,11 +2,15 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, Sun, Menu, LayoutDashboard } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
+import { useCartStore } from '../store/cartStore';
 import MobileMenu from './MobileMenu';
 
 const Navbar = () => {
   const { isAuthenticated } = useAuthStore();
+  const { items } = useCartStore();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const cartItemCount = items.reduce((total, item) => total + item.quantity, 0);
 
   return (
     <>
@@ -51,9 +55,11 @@ const Navbar = () => {
               
               <Link to="/carrito" className="relative">
                 <ShoppingCart className="h-6 w-6 text-gray-600 hover:text-gray-900" />
-                <span className="absolute -top-2 -right-2 bg-yellow-500 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs">
-                  0
-                </span>
+                {cartItemCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-yellow-500 text-white rounded-full h-5 w-5 flex items-center justify-center text-xs">
+                    {cartItemCount}
+                  </span>
+                )}
               </Link>
             </div>
             

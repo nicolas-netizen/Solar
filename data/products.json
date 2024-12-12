@@ -1,0 +1,13 @@
+[
+  {
+    "id": "1734030549985",
+    "name": "Solar",
+    "description": "Solar",
+    "price": 12,
+    "currency": "ARS",
+    "category": "asdas",
+    "stock": 12,
+    "imageUrl": "/uploads/1734030549978-340504530.png",
+    "createdAt": "2024-12-12T19:09:09.985Z"
+  }
+]

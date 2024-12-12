@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Lock } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Lock, Home } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
-import { authenticateUser } from '../../utils/auth';
+import { signInUser } from '../../../firebase/auth.ts';
 import type { LoginCredentials } from '../../types/auth';
 
 const Login = () => {
@@ -21,10 +21,38 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const user = await authenticateUser(credentials);
-      login(user);
+      const { user, error: authError } = await signInUser(credentials.email, credentials.password);
+      
+      if (authError) {
+        // Handle specific Firebase auth errors
+        switch(true) {
+          case authError.includes('auth/invalid-credential'):
+          case authError.includes('auth/invalid-email'):
+          case authError.includes('auth/user-not-found'):
+          case authError.includes('auth/wrong-password'):
+            throw new Error('Correo o contraseña incorrectos');
+          case authError.includes('auth/too-many-requests'):
+            throw new Error('Demasiados intentos fallidos. Por favor, intente más tarde');
+          case authError.includes('auth/network-request-failed'):
+            throw new Error('Error de conexión. Por favor, verifique su conexión a internet');
+          default:
+            throw new Error(authError);
+        }
+      }
+
+      if (!user) {
+        throw new Error('No se pudo iniciar sesión');
+      }
+      
+      login({
+        id: user.uid,
+        email: user.email || '',
+        name: user.displayName || 'Usuario',
+        role: 'admin'
+      });
       navigate('/admin/dashboard');
     } catch (err) {
+      console.error('Login error:', err);
       setError(err instanceof Error ? err.message : 'Error al iniciar sesión');
     } finally {
       setIsLoading(false);
@@ -34,7 +62,14 @@ const Login = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
       <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <div className="flex justify-center mb-8">
+        <div className="flex justify-between items-center mb-8">
+          <Link 
+            to="/" 
+            className="flex items-center space-x-2 text-gray-600 hover:text-yellow-500 transition-colors"
+          >
+            <Home className="h-5 w-5" />
+            <span>Volver al Inicio</span>
+          </Link>
           <div className="bg-yellow-500 p-3 rounded-full">
             <Lock className="h-6 w-6 text-white" />
           </div>
