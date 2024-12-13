@@ -167,137 +167,144 @@ const Orders = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">Administración de Órdenes</h1>
+    <div className="p-4 sm:p-6">
+      <h1 className="text-xl sm:text-2xl font-bold mb-4">Administración de Órdenes</h1>
 
       {/* Filtros */}
-      <div className="bg-white shadow rounded-lg p-6 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Buscar</label>
-            <div className="relative">
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Buscar por nombre, email o ID"
-                className="w-full pl-10 pr-3 py-2 border rounded-md"
-              />
-              <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-            </div>
+      <div className="bg-white rounded-xl shadow-sm mb-6">
+        <div className="p-4 border-b border-gray-100">
+          <div className="relative">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Buscar por nombre, email o ID"
+              className="w-full pl-10 pr-3 py-2.5 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:bg-white transition-colors"
+            />
+            <Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
           </div>
+        </div>
+        
+        <div className="grid grid-cols-3 gap-2 p-4">
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="px-3 py-2 bg-gray-50 border-0 rounded-lg text-sm focus:ring-2 focus:ring-yellow-500 focus:bg-white transition-colors"
+          >
+            <option value="all">Estado: Todos</option>
+            {Object.entries(OrderStatus).map(([value, { label }]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full p-2 border rounded-md"
-            >
-              <option value="all">Todos</option>
-              {Object.entries(OrderStatus).map(([value, { label }]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
-          </div>
+          <select
+            value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value)}
+            className="px-3 py-2 bg-gray-50 border-0 rounded-lg text-sm focus:ring-2 focus:ring-yellow-500 focus:bg-white transition-colors"
+          >
+            <option value="all">Fecha: Todas</option>
+            <option value="today">Hoy</option>
+            <option value="week">Última semana</option>
+            <option value="month">Último mes</option>
+          </select>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Fecha</label>
-            <select
-              value={dateFilter}
-              onChange={(e) => setDateFilter(e.target.value)}
-              className="w-full p-2 border rounded-md"
-            >
-              <option value="all">Todas</option>
-              <option value="today">Hoy</option>
-              <option value="week">Última semana</option>
-              <option value="month">Último mes</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Método de Pago</label>
-            <select
-              value={paymentMethodFilter}
-              onChange={(e) => setPaymentMethodFilter(e.target.value)}
-              className="w-full p-2 border rounded-md"
-            >
-              <option value="all">Todos</option>
-              <option value="cash">Efectivo</option>
-              <option value="card">Tarjeta</option>
-              <option value="transfer">Transferencia</option>
-            </select>
-          </div>
+          <select
+            value={paymentMethodFilter}
+            onChange={(e) => setPaymentMethodFilter(e.target.value)}
+            className="px-3 py-2 bg-gray-50 border-0 rounded-lg text-sm focus:ring-2 focus:ring-yellow-500 focus:bg-white transition-colors"
+          >
+            <option value="all">Pago: Todos</option>
+            <option value="cash">Efectivo</option>
+            <option value="card">Tarjeta</option>
+            <option value="transfer">Transferencia</option>
+          </select>
         </div>
       </div>
 
       {/* Lista de órdenes */}
-      <div className="grid gap-6">
+      <div className="space-y-4">
         {filteredOrders.map((order) => (
-          <div key={order.id} className="bg-white shadow rounded-lg p-6">
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <h2 className="text-lg font-semibold">Orden #{order.id}</h2>
-                <p className="text-sm text-gray-500">
-                  {new Date(order.createdAt).toLocaleString()}
-                </p>
-              </div>
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => downloadPDF(order.id)}
-                  className="p-2 text-gray-600 hover:text-gray-800"
-                  title="Descargar PDF"
-                >
-                  <Download className="w-5 h-5" />
-                </button>
-                <span className={`px-3 py-1 rounded-full text-sm ${OrderStatus[order.status as keyof typeof OrderStatus].color}`}>
-                  {OrderStatus[order.status as keyof typeof OrderStatus].label}
-                </span>
-                <select
-                  value={order.status}
-                  onChange={(e) => updateOrderStatus(order.id, e.target.value)}
-                  className="ml-2 border rounded-md text-sm p-1"
-                >
-                  {Object.entries(OrderStatus).map(([value, { label }]) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <h3 className="font-semibold mb-2">Información del Cliente</h3>
-                <div className="text-sm">
-                  <p><span className="font-medium">Nombre:</span> {order.customerInfo.name}</p>
-                  <p><span className="font-medium">Email:</span> {order.customerInfo.email}</p>
-                  <p><span className="font-medium">Teléfono:</span> {order.customerInfo.phone}</p>
-                  <p><span className="font-medium">Dirección:</span> {order.customerInfo.address}</p>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="font-semibold mb-2">Detalles del Pedido</h3>
-                <div className="text-sm">
-                  <p><span className="font-medium">Método de pago:</span> {order.paymentMethod}</p>
-                  <p><span className="font-medium">Total:</span> ${order.total.toFixed(2)}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-4">
-              <h3 className="font-semibold mb-2">Productos</h3>
-              <div className="space-y-2">
-                {order.items.map((item) => (
-                  <div key={item.id} className="flex justify-between text-sm">
-                    <span>{item.name} x {item.quantity}</span>
-                    <span>${(item.price * item.quantity).toFixed(2)}</span>
+          <div key={order.id} className="bg-white rounded-xl shadow-sm overflow-hidden">
+            {/* Header de la orden */}
+            <div className="p-4 border-b border-gray-100">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div>
+                  <div className="flex items-center gap-3">
+                    <h2 className="text-lg font-semibold">#{order.id}</h2>
+                    <span className={`px-3 py-1 rounded-full text-sm ${OrderStatus[order.status as keyof typeof OrderStatus].color}`}>
+                      {OrderStatus[order.status as keyof typeof OrderStatus].label}
+                    </span>
                   </div>
-                ))}
+                  <p className="text-sm text-gray-500 mt-1">
+                    {new Date(order.createdAt).toLocaleString()}
+                  </p>
+                </div>
+                <div className="flex items-center gap-2 self-end sm:self-auto">
+                  <select
+                    value={order.status}
+                    onChange={(e) => updateOrderStatus(order.id, e.target.value)}
+                    className="text-sm p-2 bg-gray-50 border-0 rounded-lg focus:ring-2 focus:ring-yellow-500"
+                  >
+                    {Object.entries(OrderStatus).map(([value, { label }]) => (
+                      <option key={value} value={value}>{label}</option>
+                    ))}
+                  </select>
+                  <button
+                    onClick={() => downloadPDF(order.id)}
+                    className="p-2 text-gray-600 hover:text-gray-800 bg-gray-50 rounded-lg"
+                    title="Descargar PDF"
+                  >
+                    <Download className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Contenido de la orden */}
+            <div className="p-4">
+              <div className="grid sm:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="font-medium text-gray-900 mb-3">Información del Cliente</h3>
+                  <div className="space-y-2 text-sm">
+                    <p className="flex justify-between">
+                      <span className="text-gray-600">Nombre:</span>
+                      <span className="font-medium">{order.customerInfo.name}</span>
+                    </p>
+                    <p className="flex justify-between">
+                      <span className="text-gray-600">Email:</span>
+                      <span className="font-medium">{order.customerInfo.email}</span>
+                    </p>
+                    <p className="flex justify-between">
+                      <span className="text-gray-600">Teléfono:</span>
+                      <span className="font-medium">{order.customerInfo.phone}</span>
+                    </p>
+                    <p className="flex justify-between">
+                      <span className="text-gray-600">Dirección:</span>
+                      <span className="font-medium">{order.customerInfo.address}</span>
+                    </p>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-medium text-gray-900 mb-3">Productos</h3>
+                  <div className="space-y-2 text-sm">
+                    {order.items.map((item) => (
+                      <div key={item.id} className="flex justify-between items-center py-1 border-b border-gray-100 last:border-0">
+                        <div className="flex items-center gap-2">
+                          <span>{item.name}</span>
+                          <span className="text-gray-500">x{item.quantity}</span>
+                        </div>
+                        <span className="font-medium">${(item.price * item.quantity).toFixed(2)}</span>
+                      </div>
+                    ))}
+                    <div className="flex justify-between items-center pt-2 font-medium">
+                      <span>Total</span>
+                      <span className="text-yellow-500">${order.total.toFixed(2)}</span>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

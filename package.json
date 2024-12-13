@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "start": "vite",
-    "server": "nodemon --experimental-json-modules server.js",
+    "server": "node server.js",
     "dev": "concurrently \"npm run server\" \"npm run start\"",
     "build": "vite build",
+    "vercel-build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },

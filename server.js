@@ -448,6 +448,121 @@ app.get('/api/orders/:id/pdf', async (req, res) => {
   }
 });
 
+// Dashboard Stats
+app.get('/api/dashboard/stats', async (req, res) => {
+  try {
+    const orders = getOrders();
+    const products = getProducts();
+    const customers = [];
+
+    orders.forEach(order => {
+      const customer = customers.find(c => c.email === order.customerInfo.email);
+
+      if (!customer) {
+        customers.push({
+          email: order.customerInfo.email,
+          name: order.customerInfo.name,
+          totalOrders: 1,
+          totalSpent: order.total,
+          lastOrderDate: order.createdAt
+        });
+      } else {
+        customer.totalOrders++;
+        customer.totalSpent += order.total;
+        customer.lastOrderDate = order.createdAt;
+      }
+    });
+
+    // Calculate total revenue
+    const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
+
+    // Get recent orders
+    const recentOrders = orders
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+      .slice(0, 5)
+      .map(order => ({
+        id: order.id,
+        customerName: order.customerInfo.name,
+        total: order.total,
+        status: order.status,
+        date: order.createdAt
+      }));
+
+    // Calculate product stats
+    const productStats = products
+      .map(product => ({
+        name: product.name,
+        sold: orders.filter(order => 
+          order.items.some(item => item.id === product.id)
+        ).length,
+        revenue: orders.reduce((sum, order) => {
+          const productOrder = order.items.find(item => item.id === product.id);
+          return sum + (productOrder ? productOrder.price * productOrder.quantity : 0);
+        }, 0)
+      }))
+      .sort((a, b) => b.sold - a.sold)
+      .slice(0, 5);
+
+    // Get recent customers with their stats
+    const customerStats = customers.map(customer => ({
+      id: customer.email,
+      name: customer.name,
+      email: customer.email,
+      totalSpent: customer.totalSpent,
+      totalOrders: customer.totalOrders,
+      lastOrderDate: customer.lastOrderDate
+    }));
+
+    const recentCustomers = customerStats
+      .sort((a, b) => (b.lastOrderDate || 0) - (a.lastOrderDate || 0))
+      .slice(0, 5);
+
+    res.json({
+      totalOrders: orders.length,
+      totalCustomers: customers.length,
+      totalRevenue,
+      totalProducts: products.length,
+      recentOrders,
+      productStats,
+      recentCustomers
+    });
+  } catch (error) {
+    console.error('Error getting dashboard stats:', error);
+    res.status(500).json({ error: 'Error getting dashboard stats' });
+  }
+});
+
+// Customers Endpoints
+app.get('/api/customers', async (req, res) => {
+  try {
+    const orders = getOrders();
+    const customers = [];
+
+    orders.forEach(order => {
+      const customer = customers.find(c => c.email === order.customerInfo.email);
+
+      if (!customer) {
+        customers.push({
+          email: order.customerInfo.email,
+          name: order.customerInfo.name,
+          totalOrders: 1,
+          totalSpent: order.total,
+          lastOrderDate: order.createdAt
+        });
+      } else {
+        customer.totalOrders++;
+        customer.totalSpent += order.total;
+        customer.lastOrderDate = order.createdAt;
+      }
+    });
+
+    res.json(customers);
+  } catch (error) {
+    console.error('Error getting customers:', error);
+    res.status(500).json({ error: 'Error getting customers' });
+  }
+});
+
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit, Trash2, Loader } from 'lucide-react';
+import { Plus, Edit, Trash2, Loader, X, Eye } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface ProductFormData {
@@ -24,11 +24,24 @@ const initialFormData: ProductFormData = {
 
 const API_URL = 'http://localhost:3001/api';
 
+interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  currency: 'USD' | 'ARS';
+  category: string;
+  stock: number;
+  imageUrl: string;
+}
+
 const Products = () => {
-  const [products, setProducts] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [formData, setFormData] = useState<ProductFormData>(initialFormData);
   const [editingProductId, setEditingProductId] = useState<string | null>(null);
 
@@ -121,7 +134,7 @@ const Products = () => {
     }
   };
 
-  const handleEdit = (product: any) => {
+  const handleEdit = (product: Product) => {
     setFormData({
       name: product.name,
       description: product.description,
@@ -133,6 +146,11 @@ const Products = () => {
     });
     setEditingProductId(product.id);
     setIsModalOpen(true);
+  };
+
+  const handleViewDetails = (product: Product) => {
+    setSelectedProduct(product);
+    setIsDetailModalOpen(true);
   };
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -160,13 +178,13 @@ const Products = () => {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Gestión de Productos</h1>
+    <div className="p-4 sm:p-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-0">Gestión de Productos</h1>
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className="bg-yellow-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2"
+          className="w-full sm:w-auto bg-yellow-500 text-white px-4 py-2.5 rounded-lg flex items-center justify-center space-x-2"
           onClick={() => {
             setFormData(initialFormData);
             setEditingProductId(null);
@@ -179,12 +197,12 @@ const Products = () => {
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-500 p-4 rounded-lg mb-6">
+        <div className="bg-red-50 text-red-500 p-4 rounded-lg mb-4 sm:mb-6">
           {error}
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
         <AnimatePresence>
           {products.map((product) => (
             <motion.div
@@ -192,48 +210,137 @@ const Products = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="bg-white rounded-lg shadow-md overflow-hidden max-w-[300px]"
+              className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden cursor-pointer"
+              onClick={() => handleViewDetails(product)}
             >
-              <img
-                src={product.imageUrl || '/placeholder.png'}
-                alt={product.name}
-                className="w-full h-36 object-cover"
-              />
-              <div className="p-4">
-                <h3 className="text-lg font-semibold mb-2">{product.name}</h3>
-                <p className="text-gray-600 mb-2">{product.description}</p>
-                <div className="flex items-center space-x-2">
+              <div className="aspect-square w-full relative">
+                <img
+                  src={product.imageUrl || '/placeholder.png'}
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute top-2 right-2 flex space-x-1">
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    className="p-2 bg-white bg-opacity-90 text-blue-500 rounded-full shadow-sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEdit(product);
+                    }}
+                  >
+                    <Edit className="h-4 w-4" />
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    className="p-2 bg-white bg-opacity-90 text-red-500 rounded-full shadow-sm"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(product.id);
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </motion.button>
+                </div>
+              </div>
+              <div className="p-3">
+                <h3 className="font-semibold text-gray-800 truncate">{product.name}</h3>
+                <p className="text-gray-500 text-sm line-clamp-2 mt-1 mb-2">{product.description}</p>
+                <div className="flex justify-between items-center">
                   <span className="text-yellow-500 font-bold">
                     {product.currency === 'ARS' ? 'AR$' : '$'} {product.price.toFixed(2)}
                   </span>
-                  <span className="text-sm text-gray-500">({product.currency})</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-600">{product.stock} unidades</span>
-                  <div className="flex space-x-2">
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      className="p-2 text-blue-500 hover:bg-blue-50 rounded-full"
-                      onClick={() => handleEdit(product)}
-                    >
-                      <Edit className="h-5 w-5" />
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      className="p-2 text-red-500 hover:bg-red-50 rounded-full"
-                      onClick={() => handleDelete(product.id!)}
-                    >
-                      <Trash2 className="h-5 w-5" />
-                    </motion.button>
-                  </div>
+                  <span className="text-sm text-gray-500">({product.stock} unidades)</span>
                 </div>
               </div>
             </motion.div>
           ))}
         </AnimatePresence>
       </div>
+
+      {/* Detail Modal */}
+      <AnimatePresence>
+        {isDetailModalOpen && selectedProduct && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            >
+              <div className="relative">
+                <button
+                  onClick={() => setIsDetailModalOpen(false)}
+                  className="absolute top-4 right-4 p-2 text-gray-500 hover:text-gray-700 rounded-full hover:bg-gray-100"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+                <div className="flex flex-col md:flex-row">
+                  <div className="md:w-1/2">
+                    <img
+                      src={selectedProduct.imageUrl || '/placeholder.png'}
+                      alt={selectedProduct.name}
+                      className="w-full h-[300px] object-cover rounded-t-lg md:rounded-l-lg md:rounded-t-none"
+                    />
+                  </div>
+                  <div className="p-6 md:w-1/2">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-4">{selectedProduct.name}</h2>
+                    <div className="space-y-4">
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-700 mb-2">Descripción</h3>
+                        <p className="text-gray-600">{selectedProduct.description}</p>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <h3 className="text-lg font-semibold text-gray-700">Precio</h3>
+                          <p className="text-2xl font-bold text-yellow-500">
+                            {selectedProduct.currency === 'ARS' ? 'AR$' : '$'} {selectedProduct.price.toFixed(2)}
+                          </p>
+                        </div>
+                        <div className="text-right">
+                          <h3 className="text-lg font-semibold text-gray-700">Stock</h3>
+                          <p className="text-xl font-semibold text-gray-600">{selectedProduct.stock} unidades</p>
+                        </div>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-700 mb-2">Categoría</h3>
+                        <span className="inline-block bg-gray-100 text-gray-700 px-3 py-1 rounded-full">
+                          {selectedProduct.category}
+                        </span>
+                      </div>
+                      <div className="flex space-x-2 mt-6">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsDetailModalOpen(false);
+                            handleEdit(selectedProduct);
+                          }}
+                          className="flex-1 bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-200"
+                        >
+                          Editar
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (window.confirm('¿Estás seguro de que quieres eliminar este producto?')) {
+                              handleDelete(selectedProduct.id);
+                              setIsDetailModalOpen(false);
+                            }
+                          }}
+                          className="flex-1 bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition-colors duration-200"
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Modal Form */}
       {isModalOpen && (
