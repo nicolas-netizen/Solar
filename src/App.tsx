@@ -117,25 +117,20 @@ function App() {
           />
           
           {/* Admin Routes */}
-          <Route path="/admin/login" element={
-            isAuthenticated ? <Navigate to="/admin/dashboard" replace /> : <Login />
-          } />
-          
+          <Route path="/admin/login" element={<Login />} />
           <Route
-            path="/admin/*"
+            path="/admin"
             element={
               <ProtectedRoute>
-                <Routes>
-                  <Route element={<AdminLayout />}>
-                    <Route index element={<Navigate to="/admin/dashboard" replace />} />
-                    <Route path="dashboard" element={<Dashboard />} />
-                    <Route path="products" element={<Products />} />
-                    <Route path="orders" element={<AdminOrders />} />
-                  </Route>
-                </Routes>
+                <AdminLayout />
               </ProtectedRoute>
             }
-          />
+          >
+            <Route index element={<Navigate to="/admin/dashboard" replace />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="products" element={<Products />} />
+            <Route path="orders" element={<AdminOrders />} />
+          </Route>
 
           {/* Ruta por defecto */}
           <Route path="*" element={<Navigate to="/" replace />} />

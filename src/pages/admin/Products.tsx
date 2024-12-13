@@ -192,12 +192,12 @@ const Products = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="bg-white rounded-lg shadow-md overflow-hidden"
+              className="bg-white rounded-lg shadow-md overflow-hidden max-w-[300px]"
             >
               <img
                 src={product.imageUrl || '/placeholder.png'}
                 alt={product.name}
-                className="w-full h-48 object-cover"
+                className="w-full h-36 object-cover"
               />
               <div className="p-4">
                 <h3 className="text-lg font-semibold mb-2">{product.name}</h3>
@@ -242,12 +242,13 @@ const Products = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="bg-white rounded-lg p-6 max-w-md w-full"
+            className="bg-white rounded-lg p-6 shadow-xl max-w-lg w-full max-h-screen overflow-y-auto"
           >
-            <h2 className="text-xl font-bold mb-4">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-6">
               {editingProductId ? 'Editar Producto' : 'Nuevo Producto'}
             </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Nombre */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Nombre
@@ -258,10 +259,11 @@ const Products = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-md"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
                   required
                 />
               </div>
+              {/* Descripción */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Descripción
@@ -271,38 +273,41 @@ const Products = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, description: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-md"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                  rows={3}
                   required
                 />
               </div>
+              {/* Precio */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Precio
                 </label>
-                <div className="flex space-x-2">
-                  <div className="flex-1">
-                    <input
-                      type="text"
-                      value={formData.price}
-                      onChange={(e) => {
-                        const value = e.target.value.replace(/[^\d.]/g, '');
-                        setFormData({ ...formData, price: value });
-                      }}
-                      placeholder="0.00"
-                      className="w-full px-3 py-2 border rounded-md"
-                      required
-                    />
-                  </div>
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    value={formData.price}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/[^\d.]/g, '');
+                      setFormData({ ...formData, price: value });
+                    }}
+                    placeholder="0.00"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
+                    required
+                  />
                   <select
                     value={formData.currency}
-                    onChange={(e) => setFormData({ ...formData, currency: e.target.value as 'USD' | 'ARS' })}
-                    className="px-3 py-2 border rounded-md bg-white"
+                    onChange={(e) =>
+                      setFormData({ ...formData, currency: e.target.value as 'USD' | 'ARS' })
+                    }
+                    className="px-4 py-2 border border-gray-300 rounded-lg shadow-sm bg-white focus:outline-none focus:ring-2 focus:ring-yellow-500"
                   >
                     <option value="USD">USD</option>
                     <option value="ARS">ARS</option>
                   </select>
                 </div>
               </div>
+              {/* Categoría */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Categoría
@@ -313,10 +318,11 @@ const Products = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, category: e.target.value })
                   }
-                  className="w-full px-3 py-2 border rounded-md"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
                   required
                 />
               </div>
+              {/* Stock */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Stock
@@ -329,71 +335,39 @@ const Products = () => {
                     setFormData({ ...formData, stock: value });
                   }}
                   placeholder="0"
-                  className="w-full px-3 py-2 border rounded-md"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
                   required
                 />
               </div>
+              {/* Imagen */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Imagen
                 </label>
-                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                  <div className="space-y-1 text-center">
-                    <svg
-                      className="mx-auto h-12 w-12 text-gray-400"
-                      stroke="currentColor"
-                      fill="none"
-                      viewBox="0 0 48 48"
-                      aria-hidden="true"
-                    >
-                      <path
-                        d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                        strokeWidth={2}
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
-                    <div className="flex text-sm text-gray-600">
-                      <label
-                        htmlFor="file-upload"
-                        className="relative cursor-pointer bg-white rounded-md font-medium text-yellow-600 hover:text-yellow-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-yellow-500"
-                      >
-                        <span>Subir imagen</span>
-                        <input
-                          id="file-upload"
-                          name="file-upload"
-                          type="file"
-                          accept=".png,.jpg,.jpeg"
-                          onChange={handleImageChange}
-                          className="sr-only"
-                        />
-                      </label>
-                      <p className="pl-1">o arrastrar y soltar</p>
-                    </div>
-                    <p className="text-xs text-gray-500">PNG, JPG hasta 5MB</p>
-                  </div>
+                <div className="flex justify-center items-center px-4 py-4 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50">
+                  <input
+                    id="file-upload"
+                    name="file-upload"
+                    type="file"
+                    accept=".png,.jpg,.jpeg"
+                    onChange={handleImageChange}
+                    className="sr-only"
+                  />
+                  <label
+                    htmlFor="file-upload"
+                    className="text-yellow-600 cursor-pointer hover:underline"
+                  >
+                    Subir imagen o arrastrar aquí
+                  </label>
                 </div>
                 {formData.imageFile && (
-                  <div className="mt-2">
-                    <p className="text-sm text-gray-500">
-                      Archivo seleccionado: {formData.imageFile.name}
-                    </p>
-                    <button
-                      type="button"
-                      onClick={() => setFormData({ ...formData, imageFile: null })}
-                      className="mt-1 text-sm text-red-500 hover:text-red-700"
-                    >
-                      Eliminar imagen
-                    </button>
-                  </div>
-                )}
-                {error && (
-                  <p className="mt-2 text-sm text-red-600">
-                    {error}
+                  <p className="text-sm text-gray-600 mt-2">
+                    Archivo seleccionado: {formData.imageFile.name}
                   </p>
                 )}
               </div>
-              <div className="flex justify-end space-x-3 mt-6">
+              {/* Botones */}
+              <div className="flex justify-end space-x-2">
                 <button
                   type="button"
                   onClick={() => {
@@ -403,14 +377,13 @@ const Products = () => {
                     setError('');
                     setIsLoading(false);
                   }}
-                  className="px-4 py-2 text-gray-600 hover:text-gray-800"
-                  disabled={isLoading}
+                  className="px-3 py-1.5 text-sm text-gray-600 bg-gray-200 rounded-lg hover:bg-gray-300"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="bg-yellow-500 text-white px-4 py-2 rounded-lg flex items-center space-x-2 disabled:opacity-50"
+                  className="px-3 py-1.5 text-sm bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 disabled:opacity-50 flex items-center space-x-2"
                   disabled={isLoading}
                 >
                   {isLoading ? (

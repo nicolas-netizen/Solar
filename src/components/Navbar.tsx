@@ -40,31 +40,8 @@ const Navbar = () => {
             transition={{ duration: 0.5 }}
           >
             <Link to="/" className="flex items-center space-x-2">
-              <motion.div
-                animate={{
-                  rotate: 360,
-                  scale: [1, 1.1, 1],
-                }}
-                transition={{
-                  rotate: {
-                    duration: 10,
-                    repeat: Infinity,
-                    ease: "linear"
-                  },
-                  scale: {
-                    duration: 2,
-                    repeat: Infinity,
-                    repeatType: "reverse"
-                  }
-                }}
-                whileHover={{
-                  scale: 1.2,
-                  filter: "brightness(1.2)",
-                }}
-              >
-                <Sun className="h-8 w-8 text-yellow-500" />
-              </motion.div>
-              <span className="text-xl font-bold text-gray-800">Nuevo Mundo</span>
+              <Sun className="h-8 w-8 text-yellow-500" />
+              <span className="text-xl font-bold text-gray-800">Nuevo Mundo Solar</span>
             </Link>
           </motion.div>
 
