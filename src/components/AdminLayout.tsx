@@ -13,10 +13,6 @@ const AdminLayout = () => {
     navigate('/admin/login');
   };
 
-  const goToHome = () => {
-    navigate('/');
-  };
-
   return (
     <div className="flex min-h-screen">
       <AdminSidebar />
@@ -24,15 +20,15 @@ const AdminLayout = () => {
         <header className="bg-white shadow">
           <div className="px-4 py-3 flex justify-between items-center">
             <button
-              onClick={goToHome}
-              className="flex items-center gap-2 text-gray-600 hover:text-blue-600"
+              onClick={() => navigate('/')}
+              className="flex items-center gap-2 px-4 py-2 text-gray-600 hover:text-yellow-600 rounded-lg hover:bg-gray-100 transition-colors"
             >
               <Home className="w-5 h-5" />
-              <span>Ir al Inicio</span>
+              <span>Volver al Inicio</span>
             </button>
             <button
               onClick={handleLogout}
-              className="flex items-center gap-2 text-gray-600 hover:text-red-600"
+              className="flex items-center gap-2 px-4 py-2 text-red-600 hover:text-red-700 rounded-lg hover:bg-red-50 transition-colors"
             >
               <LogOut className="w-5 h-5" />
               <span>Cerrar Sesión</span>

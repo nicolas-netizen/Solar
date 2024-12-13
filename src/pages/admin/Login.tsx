@@ -24,7 +24,6 @@ const Login = () => {
       const { user, error: authError } = await signInUser(credentials.email, credentials.password);
       
       if (authError) {
-        // Handle specific Firebase auth errors
         switch(true) {
           case authError.includes('auth/invalid-credential'):
           case authError.includes('auth/invalid-email'):
@@ -44,13 +43,19 @@ const Login = () => {
         throw new Error('No se pudo iniciar sesión');
       }
       
+      // Login successful
+      console.log('Login successful:', user);
+      
       login({
         id: user.uid,
         email: user.email || '',
         name: user.displayName || 'Usuario',
         role: 'admin'
       });
-      navigate('/admin/dashboard');
+
+      // Redirect to dashboard
+      console.log('Redirecting to dashboard...');
+      navigate('/admin/dashboard', { replace: true });
     } catch (err) {
       console.error('Login error:', err);
       setError(err instanceof Error ? err.message : 'Error al iniciar sesión');
