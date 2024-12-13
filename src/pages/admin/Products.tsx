@@ -24,6 +24,17 @@ const initialFormData: ProductFormData = {
 
 const API_URL = 'http://localhost:3001/api';
 
+// Función para cargar datos locales
+const loadLocalProducts = async () => {
+  try {
+    const response = await import('../../../data/products.json');
+    return response.default;
+  } catch (error) {
+    console.error('Error loading local products:', error);
+    return [];
+  }
+};
+
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -35,12 +46,20 @@ const Products = () => {
   const loadProducts = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch(`${API_URL}/products`);
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      // Intentar cargar desde el servidor
+      try {
+        const response = await fetch(`${API_URL}/products`);
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        const products = await response.json();
+        setProducts(products);
+      } catch (serverError) {
+        console.warn('Fallback to local data:', serverError);
+        // Si falla, cargar datos locales
+        const localProducts = await loadLocalProducts();
+        setProducts(localProducts);
       }
-      const products = await response.json();
-      setProducts(products);
     } catch (error) {
       console.error('Error al cargar productos:', error);
       setError(error instanceof Error ? error.message : 'Error al cargar productos');
@@ -66,12 +85,12 @@ const Products = () => {
       formDataToSend.append('currency', formData.currency);
       formDataToSend.append('category', formData.category);
       formDataToSend.append('stock', formData.stock);
-      
+
       if (formData.imageFile) {
         formDataToSend.append('image', formData.imageFile);
       }
 
-      const url = editingProductId 
+      const url = editingProductId
         ? `${API_URL}/products/${editingProductId}`
         : `${API_URL}/products`;
 

@@ -28,12 +28,25 @@ const OrderStatus = {
   cancelled: { label: 'Cancelado', color: 'bg-red-100 text-red-800' },
 };
 
+const API_URL = 'http://localhost:3001/api';
+
+// Función para cargar datos locales
+const loadLocalOrders = async () => {
+  try {
+    const response = await import('../../../data/orders.json');
+    return response.default;
+  } catch (error) {
+    console.error('Error loading local orders:', error);
+    return [];
+  }
+};
+
 const Orders = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  
+
   // Filtros
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -49,15 +62,26 @@ const Orders = () => {
   }, [orders, searchTerm, statusFilter, dateFilter, paymentMethodFilter]);
 
   const fetchOrders = async () => {
+    setIsLoading(true);
     try {
-      const response = await fetch('http://localhost:3001/api/orders');
-      if (!response.ok) {
-        throw new Error('Error al obtener las órdenes');
+      // Intentar cargar desde el servidor
+      try {
+        const response = await fetch(`${API_URL}/orders`);
+        if (!response.ok) {
+          throw new Error(`Error ${response.status}: ${response.statusText}`);
+        }
+        const data = await response.json();
+        setOrders(data);
+        setFilteredOrders(data);
+      } catch (serverError) {
+        console.warn('Fallback to local data:', serverError);
+        // Si falla, cargar datos locales
+        const localOrders = await loadLocalOrders();
+        setOrders(localOrders);
+        setFilteredOrders(localOrders);
       }
-      const data = await response.json();
-      setOrders(data);
-      setFilteredOrders(data);
     } catch (error) {
+      console.error('Error al obtener las órdenes:', error);
       setError(error instanceof Error ? error.message : 'Error desconocido');
     } finally {
       setIsLoading(false);
@@ -118,7 +142,7 @@ const Orders = () => {
 
   const updateOrderStatus = async (orderId: string, newStatus: string) => {
     try {
-      const response = await fetch(`http://localhost:3001/api/orders/${orderId}/status`, {
+      const response = await fetch(`${API_URL}/orders/${orderId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -143,7 +167,7 @@ const Orders = () => {
 
   const downloadPDF = async (orderId: string) => {
     try {
-      window.open(`http://localhost:3001/api/orders/${orderId}/pdf`, '_blank');
+      window.open(`${API_URL}/orders/${orderId}/pdf`, '_blank');
     } catch (error) {
       console.error('Error al descargar PDF:', error);
       alert('Error al descargar el PDF');

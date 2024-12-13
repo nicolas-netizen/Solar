@@ -17,14 +17,33 @@ export interface Product {
 
 const API_URL = 'http://localhost:3001/api';
 
+// Función para cargar datos locales
+const loadLocalProducts = async () => {
+  try {
+    const response = await import('../data/products.json');
+    return response.default;
+  } catch (error) {
+    console.error('Error loading local products:', error);
+    return [];
+  }
+};
+
 export const getProducts = async () => {
   try {
-    const response = await fetch(`${API_URL}/products`);
-    if (!response.ok) {
-      throw new Error(`Error ${response.status}: ${response.statusText}`);
+    // Intentar cargar desde el servidor
+    try {
+      const response = await fetch(`${API_URL}/products`);
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+      const products = await response.json();
+      return { products, error: null };
+    } catch (serverError) {
+      console.warn('Fallback to local data:', serverError);
+      // Si falla, cargar datos locales
+      const localProducts = await loadLocalProducts();
+      return { products: localProducts, error: null };
     }
-    const products = await response.json();
-    return { products, error: null };
   } catch (error) {
     console.error('Error fetching products:', error);
     return { products: [], error: error instanceof Error ? error.message : 'Error desconocido' };

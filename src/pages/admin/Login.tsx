@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Lock, Home } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
-import { signInUser } from '../../../firebase/auth.ts';
+import { signInUser } from '../../../firebase/auth';
 import type { LoginCredentials } from '../../types/auth';
 
 const Login = () => {
@@ -24,19 +24,20 @@ const Login = () => {
       const { user, error: authError } = await signInUser(credentials.email, credentials.password);
       
       if (authError) {
+        const errorMessage = authError.toLowerCase();
         // Handle specific Firebase auth errors
         switch(true) {
-          case authError.includes('auth/invalid-credential'):
-          case authError.includes('auth/invalid-email'):
-          case authError.includes('auth/user-not-found'):
-          case authError.includes('auth/wrong-password'):
+          case errorMessage.includes('invalid-credential'):
+          case errorMessage.includes('invalid-email'):
+          case errorMessage.includes('user-not-found'):
+          case errorMessage.includes('wrong-password'):
             throw new Error('Correo o contraseña incorrectos');
-          case authError.includes('auth/too-many-requests'):
+          case errorMessage.includes('too-many-requests'):
             throw new Error('Demasiados intentos fallidos. Por favor, intente más tarde');
-          case authError.includes('auth/network-request-failed'):
+          case errorMessage.includes('network-request-failed'):
             throw new Error('Error de conexión. Por favor, verifique su conexión a internet');
           default:
-            throw new Error(authError);
+            throw new Error('Error al iniciar sesión');
         }
       }
 
