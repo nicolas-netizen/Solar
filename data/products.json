@@ -20,5 +20,16 @@
     "stock": 12,
     "imageUrl": "/uploads/1734034157793-49664430.png",
     "createdAt": "2024-12-12T20:09:17.800Z"
+  },
+  {
+    "id": "1734357569732",
+    "name": "Solar",
+    "description": "SOla1",
+    "price": 20000,
+    "currency": "ARS",
+    "category": "Solar",
+    "stock": 1221,
+    "imageUrl": "/uploads/1734357569724-838785862.png",
+    "createdAt": "2024-12-16T13:59:29.732Z"
   }
 ]

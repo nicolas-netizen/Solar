@@ -26,5 +26,72 @@
     "status": "pending",
     "createdAt": "2024-12-12T19:38:45.564Z",
     "updatedAt": "2024-12-12T20:08:51.661Z"
+  },
+  {
+    "id": "1734316886909",
+    "customerInfo": {
+      "name": "sda",
+      "email": "213@asfdas",
+      "phone": "21312",
+      "address": "sadas"
+    },
+    "items": [
+      {
+        "id": "1734030549985",
+        "name": "Solar",
+        "description": "Solar",
+        "price": 12,
+        "currency": "ARS",
+        "category": "asdas",
+        "stock": 12,
+        "imageUrl": "/uploads/1734030549978-340504530.png",
+        "createdAt": "2024-12-12T19:09:09.985Z",
+        "quantity": 1
+      }
+    ],
+    "paymentMethod": "card",
+    "total": 12,
+    "status": "pending",
+    "createdAt": "2024-12-16T02:41:26.909Z"
+  },
+  {
+    "id": "1734357609077",
+    "customerInfo": {
+      "name": "edu",
+      "email": "asdsda@asdasd",
+      "phone": "12312",
+      "address": "sadas"
+    },
+    "items": [
+      {
+        "id": "1734357569732",
+        "name": "Solar",
+        "description": "SOla1",
+        "price": 20000,
+        "currency": "ARS",
+        "category": "Solar",
+        "stock": 1221,
+        "imageUrl": "/uploads/1734357569724-838785862.png",
+        "createdAt": "2024-12-16T13:59:29.732Z",
+        "quantity": 1
+      },
+      {
+        "id": "1734034157800",
+        "name": "Solas",
+        "description": "as",
+        "price": 1221,
+        "currency": "USD",
+        "category": "asdas",
+        "stock": 12,
+        "imageUrl": "/uploads/1734034157793-49664430.png",
+        "createdAt": "2024-12-12T20:09:17.800Z",
+        "quantity": 1
+      }
+    ],
+    "paymentMethod": "transfer",
+    "total": 21221,
+    "status": "completed",
+    "createdAt": "2024-12-16T14:00:09.077Z",
+    "updatedAt": "2024-12-16T14:00:37.306Z"
   }
 ]
