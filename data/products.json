@@ -11,17 +11,6 @@
     "createdAt": "2024-12-12T19:09:09.985Z"
   },
   {
-    "id": "1734034157800",
-    "name": "Solas",
-    "description": "as",
-    "price": 1221,
-    "currency": "USD",
-    "category": "asdas",
-    "stock": 12,
-    "imageUrl": "/uploads/1734034157793-49664430.png",
-    "createdAt": "2024-12-12T20:09:17.800Z"
-  },
-  {
     "id": "1734357569732",
     "name": "Solar",
     "description": "SOla1",
